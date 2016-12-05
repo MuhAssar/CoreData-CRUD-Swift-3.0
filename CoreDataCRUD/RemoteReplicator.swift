@@ -5,6 +5,9 @@
 //  Created by c0d3r on 04/10/15.
 //  Copyright © 2015 io pandacode. All rights reserved.
 //
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
 
 import Foundation
 
@@ -52,7 +55,7 @@ class RemoteReplicator : ReplicatorProtocol {
             }
             else {
                 //Read JSON response in seperate thread
-                DispatchQueue.global().async {
+                DispatchQueue.global(qos: .default).async(execute: {
                     // read JSON file, parse JSON data
                     self.processData(data! as AnyObject?)
                     
@@ -60,7 +63,7 @@ class RemoteReplicator : ReplicatorProtocol {
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "updateEventTableData"), object: nil)
                     }
-                }
+                })
             }
         }
     }
@@ -76,27 +79,23 @@ class RemoteReplicator : ReplicatorProtocol {
     func processData(_ jsonResponse:AnyObject?) {
         
         let jsonData:Data = jsonResponse as! Data
-        var jsonResult:AnyObject!
+        var jsonResult:Any!
         
         do {
-            jsonResult = try JSONSerialization.data(withJSONObject: jsonData, options: []) as AnyObject!
-
+            jsonResult = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers)
         } catch let fetchError as NSError {
             print("pull error: \(fetchError.localizedDescription)")
         }
 
         var retrievedEvents:[Dictionary<String,AnyObject>] = []
         
-        if let eventList = jsonResult  {
-            for index in 0..<eventList.count {
-                var eventItem:Dictionary<String, AnyObject> = eventList[index] as! Dictionary<String, AnyObject>
-                
+        if let eventList = jsonResult as? [Dictionary<String, AnyObject>]  {
+            for var eventItem in eventList {
                 //Create additional event item properties:
                 
                 //Prefix title with remote(ly) retrieved label
-                eventItem[EventAttributes.title.rawValue] = "[REMOTE] \(eventItem[EventAttributes.title.rawValue]!)"
- as AnyObject?
-                
+                eventItem[EventAttributes.title.rawValue] = "[REMOTE] \(eventItem[EventAttributes.title.rawValue]!)" as AnyObject
+
                 //Generate event UUID
                 eventItem[EventAttributes.eventId.rawValue] = UUID().uuidString as AnyObject?
                 

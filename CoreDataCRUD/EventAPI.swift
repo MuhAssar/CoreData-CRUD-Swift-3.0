@@ -1,3 +1,7 @@
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
+
 import UIKit
 import CoreData
 
@@ -80,11 +84,11 @@ class EventAPI {
         - Returns: Void
     */
     func saveEventsList(_ eventsList:Array<AnyObject>){
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .default).async(execute: { () -> Void in
             
             //Minion Context worker with Private Concurrency type.
             let minionManagedObjectContextWorker:NSManagedObjectContext =
-                NSManagedObjectContext.init(concurrencyType: NSManagedObjectContextConcurrencyType.privateQueueConcurrencyType)
+            NSManagedObjectContext.init(concurrencyType: NSManagedObjectContextConcurrencyType.privateQueueConcurrencyType)
             minionManagedObjectContextWorker.parent = self.mainContextInstance
             
             //Create eventEntity, process member field values
@@ -92,13 +96,11 @@ class EventAPI {
                 var eventItem:Dictionary<String, NSObject> = eventsList[index] as! Dictionary<String, NSObject>
                 
                 //Check that an Event to be stored has a date, title and city.
-                if eventItem[self.dateNamespace] as! String != ""
-                    && eventItem[self.titleNamespace] as! String != ""
-                    && eventItem[self.cityNamespace] as! String != ""  {
+                if eventItem[self.dateNamespace] as? String != "" && eventItem[self.titleNamespace] as? String != ""  && eventItem[self.cityNamespace] as? String != ""  {
                     
                     //Create new Object of Event entity
                     let item = NSEntityDescription.insertNewObject(forEntityName: EntityTypes.Event.rawValue,
-                                                                   into: minionManagedObjectContextWorker) as! Event
+                        into: minionManagedObjectContextWorker) as! Event
                     
                     //Add member field values
                     item.setValue(DateFormatter.getDateFromString(eventItem[self.dateNamespace] as! String), forKey: self.dateNamespace)
@@ -123,7 +125,7 @@ class EventAPI {
             DispatchQueue.main.async {
                 self.postUpdateNotification()
             }
-        }
+        })
     }
     
     // MARK: Read

@@ -5,6 +5,9 @@
 //  Created by c0d3r on 17/06/15.
 //  Copyright © 2015 io pandacode. All rights reserved.
 //
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
 
 import Foundation
 import XCTest

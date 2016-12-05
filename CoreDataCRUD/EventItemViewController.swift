@@ -3,6 +3,9 @@
 //  CoreDataCRUD
 //  Written by Steven R.
 //
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
 
 import UIKit
 
@@ -78,11 +81,11 @@ class EventItemViewController: UIViewController, UITextFieldDelegate, UITableVie
             newDetails[idNamespace] =  UUID().uuidString as NSObject?
             
             //Set initial list to empty list
-            newDetails[attendeesNamespace] =  [AnyObject]() as NSObject?
+            newDetails[attendeesNamespace] = [] as NSObject
             
             eventAPI.saveEvent(newDetails)
         }
-        self.navigationController?.popToRootViewController(animated: true)
+        let _ = self.navigationController?.popToRootViewController(animated: true)
     }
     
     /**
@@ -106,7 +109,7 @@ class EventItemViewController: UIViewController, UITextFieldDelegate, UITableVie
         if(selectedEventItem != nil){
             eventAPI.deleteEvent(selectedEventItem)
         }
-        self.navigationController?.popToRootViewController(animated: true)
+        let _ = self.navigationController?.popToRootViewController(animated: true)
     }
     
     // MARK: Textfield delegates
@@ -199,7 +202,7 @@ class EventItemViewController: UIViewController, UITextFieldDelegate, UITableVie
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let attendeesTableCellIdentifier = "attendeesItemCell"
         let attendeeCell = tableView.dequeueReusableCell(withIdentifier: attendeesTableCellIdentifier, for: indexPath)
-       attendeeCell.textLabel!.text = "ad"; //selectedEventItem.getAttendees[indexPath.row] as? String
+        attendeeCell.textLabel!.text = selectedEventItem.attendees[indexPath.row] as? String
         
         return attendeeCell
     }

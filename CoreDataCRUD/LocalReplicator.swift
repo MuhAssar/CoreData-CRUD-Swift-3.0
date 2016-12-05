@@ -3,6 +3,9 @@
 //  CoreDataCRUD
 //  Written by Steven R.
 //
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
 
 import Foundation
 
@@ -35,16 +38,15 @@ class LocalReplicator : ReplicatorProtocol {
     */
     func fetchData() {
         //Read JSON file in seperate thread
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .default).async(execute: {
             // read JSON file, parse JSON data
-            self.processData(self.readFile() as AnyObject?)
+            self.processData(self.readFile())
             
             // Post notification to update datasource of a given ViewController/UITableView
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: "updateEventTableData"), object: nil)
             }
-
-        }
+        })
     }
     
     /**
@@ -52,7 +54,7 @@ class LocalReplicator : ReplicatorProtocol {
     
         - Returns: AnyObject The contents of the JSON file.
     */
-    func readFile() -> Any {
+    func readFile() -> AnyObject {
         let dataSourceFilename:String = "events"
         let dataSourceFilenameExtension:String = "json"
         let filemgr = FileManager.default
@@ -60,11 +62,10 @@ class LocalReplicator : ReplicatorProtocol {
         var jsonResult:Any! = nil
         
         do {
-            let jsonData:Any = try! Data(contentsOf: URL(fileURLWithPath: currPath!))
+            let jsonData = try! Data(contentsOf: URL(fileURLWithPath: currPath!))
             
             if filemgr.fileExists(atPath: currPath!) {
-                
-                jsonResult = try JSONSerialization.data(withJSONObject: jsonData, options: [])
+                jsonResult = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers)
             } else {
                 print("\(dataSourceFilename).\(dataSourceFilenameExtension)) does not exist, therefore cannot read JSON data.")
             }
@@ -72,7 +73,7 @@ class LocalReplicator : ReplicatorProtocol {
             print("read file error: \(fetchError.localizedDescription)")
         }
         
-        return jsonResult
+        return jsonResult as AnyObject
     }
     
     /**
@@ -86,14 +87,13 @@ class LocalReplicator : ReplicatorProtocol {
     func processData(_ jsonResult:AnyObject?) {
         var retrievedEvents = [Dictionary<String,AnyObject>]()
         
-        if let eventList = jsonResult  {
-            for index in 0..<eventList.count {
-                var eventItem:Dictionary<String, AnyObject> = eventList[index] as! Dictionary<String, AnyObject>
+        if let eventList = jsonResult as? [Dictionary<String, AnyObject>] {
+            for var eventItem in eventList {
                 
                 //Create additional event item properties:
                 
                 //Prefix title with local(ly) retrieved label
-                eventItem[EventAttributes.title.rawValue] = "[LOCAL] \(eventItem[EventAttributes.title.rawValue]!)"  as AnyObject?
+                eventItem[EventAttributes.title.rawValue] = "[LOCAL] \(eventItem[EventAttributes.title.rawValue]!)" as AnyObject
                 
                 //Generate event UUID
                 eventItem[EventAttributes.eventId.rawValue] = UUID().uuidString as AnyObject?

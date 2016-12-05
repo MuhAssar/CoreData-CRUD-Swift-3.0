@@ -5,6 +5,9 @@
 //  Created by c0d3r on 17/06/15.
 //  Copyright © 2015 io pandacode. All rights reserved.
 //
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
 
 import UIKit
 import CoreData
@@ -61,16 +64,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let defaults = UserDefaults.standard
         
         //Store a finger to runCount, not that complex, nothing to worry about.
-        if var runCount:Int = defaults.integer(forKey: runCountNamespace) {
-            if(runCount == 0){
-                print("First time app run, therefore importing event data from local source...")
-                localReplicator.fetchData()
-            }
-            
-            runCount += 1
-            defaults.set(runCount, forKey:runCountNamespace)
-            print("current runCount: \(runCount)")
+        var runCount:Int = defaults.integer(forKey: runCountNamespace)
+        
+        if(runCount == 0){
+            print("First time app run, therefore importing event data from local source...")
+            localReplicator.fetchData()
         }
+        
+        runCount += 1
+        defaults.set(runCount, forKey:runCountNamespace)
+        print("current runCount: \(runCount)")
     }
 
 }

@@ -3,6 +3,9 @@
 //  CoreDataCRUD
 //  Written by Steven R.
 //
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
 
 import UIKit
 
@@ -11,7 +14,6 @@ import UIKit
 */
 class BatchActionsViewController: UIViewController {
 
-    @IBOutlet weak var dfdfgd: UIButton!
     fileprivate var eventAPI: EventAPI!
     fileprivate var localReplicator: LocalReplicator!
     fileprivate var remoteReplicator: RemoteReplicator!
@@ -32,23 +34,23 @@ class BatchActionsViewController: UIViewController {
     
     @IBAction func anonimizeListButtonTapped(_ sender: AnyObject) {
         eventAPI.anonimizeAttendeesList()
-        self.navigationController?.popToRootViewController(animated: true)
+        let _ = self.navigationController?.popToRootViewController(animated: true)
     }
     
     @IBAction func deleteAllEventsButtonTapped(_ sender: AnyObject) {
         eventAPI.deleteAllEvents()       
-        self.navigationController?.popToRootViewController(animated: true)
+        let _ = self.navigationController?.popToRootViewController(animated: true)
     }
 
     @IBAction func restoreEventsButtonTapped(_ sender: AnyObject) {
         localReplicator.fetchData()
         NotificationCenter.default.post(name: Notification.Name(rawValue: "setStateLoading"), object: nil)
-        self.navigationController?.popToRootViewController(animated: true)
+        let _ = self.navigationController?.popToRootViewController(animated: true)
     }
     @IBAction func replicateRemoteDataButtonTapped(_ sender: AnyObject) {
         remoteReplicator.fetchData()
         NotificationCenter.default.post(name: Notification.Name(rawValue: "setStateLoading"), object: nil)
-        self.navigationController?.popToRootViewController(animated: true)
+        let _ = self.navigationController?.popToRootViewController(animated: true)
 
     }
 }

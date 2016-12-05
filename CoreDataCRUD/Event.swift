@@ -3,6 +3,9 @@
 //  CoreDataCRUD
 //  Written by Steven R.
 //
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
 
 import Foundation
 import CoreData

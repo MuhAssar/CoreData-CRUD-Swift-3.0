@@ -3,6 +3,9 @@
 //  CoreDataCRUD
 //  Written by Steven R.
 //
+//  Updated to support Swift 3.0 and new CoreData
+//  by Muhammad Assar <abu.assar@gmail.com>
+//  on 12/05/2016
 
 import UIKit
 
@@ -58,9 +61,9 @@ class EventTableViewController: UITableViewController, UISearchResultsUpdating {
         let eventItem:Event!
         
         if resultSearchController.isActive {
-            eventItem = filteredEventList[(indexPath as NSIndexPath).row]
+            eventItem = filteredEventList[indexPath.row]
         } else {
-            eventItem = eventList[(indexPath as NSIndexPath).row]
+            eventItem = eventList[indexPath.row]
         }
         
         eventCell.eventDateLabel.text = DateFormatter.getStringFromDate(eventItem.date, dateFormat: "dd-MM\nyyyy")
@@ -92,10 +95,10 @@ class EventTableViewController: UITableViewController, UISearchResultsUpdating {
             let selectedEventItem: Event!
             
             if resultSearchController.isActive {
-                selectedEventItem = filteredEventList[(self.tableView.indexPathForSelectedRow! as NSIndexPath).row] as Event
+                selectedEventItem = filteredEventList[self.tableView.indexPathForSelectedRow!.row] as Event
                 resultSearchController.isActive = false
             } else {
-                selectedEventItem = eventList[(self.tableView.indexPathForSelectedRow! as NSIndexPath).row] as Event
+                selectedEventItem = eventList[self.tableView.indexPathForSelectedRow!.row] as Event
             }
             
             destination!.selectedEventItem = eventAPI.getEventById(selectedEventItem.eventId as NSString)[0] //option 2
@@ -115,9 +118,9 @@ class EventTableViewController: UITableViewController, UISearchResultsUpdating {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             //Delete item from datastore
-            eventAPI.deleteEvent(eventList[(indexPath as NSIndexPath).row])
+            eventAPI.deleteEvent(eventList[indexPath.row])
             //Delete item from tableview datascource
-            eventList.remove(at: (indexPath as NSIndexPath).row)
+            eventList.remove(at: indexPath.row)
             // Delete the row from the data source
             tableView.deleteRows(at: [indexPath], with: .fade)
             self.title = String(format: "Upcoming events (%i)",eventList.count)
